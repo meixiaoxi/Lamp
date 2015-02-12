@@ -3,17 +3,17 @@
 
 
 
-#define BREATHE_MODE_SUPPORT
+//#define BREATHE_MODE_SUPPORT
 
-//#define HYPNOSIS_MODE_SUPPORT
-//#define CANDLE_SHAKE_DEBUG
+#define HYPNOSIS_MODE_SUPPORT
+#define CANDLE_SHAKE_DEBUG
 
 #define BREATHE_UP 0
 #define BREATHE_DN 1
 
 
 
-#define FOSC		16
+#define FOSC		8
 
 #define LED_MAX_LEVEL	254
 
@@ -23,7 +23,7 @@
 #define LED_STRENGTH_UP	0
 #define LED_STRENGTH_DN	1
 
-//ledÁÁ/Ãð×´Ì¬
+//led ÁÁ/Ãð×´Ì¬
 #define LED_ON	0
 #define LED_OFF	1
 

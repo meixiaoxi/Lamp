@@ -307,7 +307,7 @@ void LampPowerOFF()
     	SlowChangeStrength(POWER_OFF);
 
 	pwm_stop();
-	while(PA3==0);
+	while(PA3==0){};
 	delay_ms(5);
 	key_interrupt_enable();
 	__Asm IDLE;		
@@ -711,6 +711,7 @@ void main()
 				if(gHypnosisDownCount ==0)
 				{	
 					LampPowerOFF();
+					continue;
 				}
 				else
 				{
