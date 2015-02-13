@@ -171,6 +171,8 @@ void EnterHypnosisMode()
 {
 	gLampMode = HYPNOSIS_MODE;
 	gCandleShakePos = 0;
+	gCountCHAR =0;
+	gCountINT = 0;
 	gHypnosisDownCount = 30;
 	gHypnosisDownLevel = 7;
 	pwm_stop();
@@ -187,6 +189,8 @@ void EnterBreatheMode()
 {
 	gLampMode = BREATHE_MODE;
 	gBreatheCount =0;
+	gCountCHAR =0;
+	gCountINT = 0;
 	gBreatheWave = BREATHE_UP;
 	T8P1RL = 1;
 	gLedStrength = 1;
@@ -242,6 +246,8 @@ void SlowChangeStrength(unsigned char type)
 								mTemp = gCountCHAR;
 								key_interrupt_enable();
 								gSysReadPA = 0xAB;
+								gCountINT = 0;
+								gCountCHAR = 0;
 							#else
 								EnterHypnosisMode();
 							#endif
@@ -520,6 +526,8 @@ void delay_with_key_detect()
 				mTemp = gCountCHAR;
 				key_interrupt_enable();
 				gSysReadPA = 0xAB;
+				gCountCHAR =0;
+				gCountINT = 0;
 				#else
 				EnterHypnosisMode();
 				#endif
@@ -651,8 +659,10 @@ void main()
 		t8p2_stop();
 		g3STick =0;
 	}
+	
 	t8p2_start();
-	EnWatchdog();	
+	EnWatchdog();
+	
 	//check whether strength exists, if not, use default strength
 	gLedStrength = I2C_read(0x00);
 	if(gLedStrength == 0xAB)  //ok, it's our flag
