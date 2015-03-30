@@ -3,10 +3,10 @@
 
 
 
-//#define BREATHE_MODE_SUPPORT
+#define BREATHE_MODE_SUPPORT
 
-#define HYPNOSIS_MODE_SUPPORT
-#define CANDLE_SHAKE_DEBUG
+//#define HYPNOSIS_MODE_SUPPORT
+//#define CANDLE_SHAKE_DEBUG
 
 #define BREATHE_UP 0
 #define BREATHE_DN 1
@@ -41,6 +41,18 @@
                                			     // 1  long press to poweroff
 
 #define HYPNOSIS_STRENGTH	210		//默认的催眠模式起始亮度
+
+//EEPROM 地址分配
+#define	ADDR_STRENGTH_FLAG	0x00   //led strengtrh 是否有效
+#define ADDR_STRENGTH 0x01		//led 亮度
+
+#define  ADDR_ONOFF_FLAG	0x10
+
+#define LED_PRE_ON	0x33
+#define LED_NOW_ON 0x33
+
+#define LED_NOW_OFF 0xAA
+#define LED_PRE_OFF 0xAA
 
 extern short I2C_read(unsigned char reg);
 extern char I2C_write(unsigned char reg, unsigned char val);

@@ -14,7 +14,7 @@ OUT_CTL  --|PA1/KIN1/RST/VPP        PA0/KIN0/PWM1/T8NCKI|-- PWM
 //sbit isConsecutivePress;  //连续按键侦测标记
 sbit gLedWave;   //记录此时的led亮度变化趋势
 unsigned char gLedStrength;    //当前led亮度值
-unsigned char g3STick;   // 3S 的计数
+unsigned short g3STick;   // 3S 的计数
 unsigned char gSysReadPA;
 unsigned int gCountINT;
 unsigned char gCountCHAR;
@@ -117,6 +117,7 @@ void delay_ms(unsigned int count)
 	}
 }
 
+#if 0
 void factoryReset()
 {
 
@@ -133,6 +134,7 @@ void factoryReset()
 		}while(1);
 	
 }
+#endif
 
 #if 0
 unsigned char get3STick()
@@ -159,7 +161,7 @@ void LoadCtlDetect()
 		if(T8P1RL <=40)
 		{
 			LoadCtl = 1;
-			delay_ms(320);
+			delay_ms(300/*250*/);
 			LoadCtl = 0;
 		}
           	//CandleShake();
@@ -316,6 +318,7 @@ void LampPowerOFF()
 	while(PA3==0){};
 	delay_ms(5);
 	key_interrupt_enable();
+	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_OFF);
 	__Asm IDLE;		
 	
 	key_interrupt_disable();
@@ -329,7 +332,7 @@ void LampPowerOFF()
 	pwm_start();
 
     	SlowChangeStrength(POWER_ON);
-
+	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_ON);
 
 /*
 	while(1)  	//缓慢亮灯
@@ -642,9 +645,14 @@ void main()
    	InitConfig();    //初始化配置
 
 	DisWatchdog();
+
+	//gLedStrength used as a temp
+	gLedStrength = I2C_read(ADDR_ONOFF_FLAG);
 	
-	if(PA1 == 0)  //OUT_CTL
+//	if(PA1 == 0)  //OUT_CTL
+	if(gLedStrength == LED_PRE_ON)
 	{
+		I2C_write(ADDR_ONOFF_FLAG, LED_NOW_OFF);
 		key_interrupt_enable();
 		__Asm IDLE;
 		key_interrupt_disable();
@@ -653,8 +661,20 @@ void main()
 		t8p2_start();
 		while(PA3 == 0) //wait key release
 		{
-			if(g3STick > 250)
-				factoryReset();
+			if(g3STick > 250)    //   4s/16.384ms  factoryReset();
+ 			{
+				I2C_write(0x00, 0x00);   //clear our flag
+				GIE =0;
+	
+				T8P1RL = 250;
+  	 			T8P1E = 1;
+				do{
+					delay_ms(200);
+					pwm_start();
+     					delay_ms(200);
+     			 		pwm_stop();
+				     }while(1);
+			}
 		}
 		t8p2_stop();
 		g3STick =0;
@@ -664,17 +684,17 @@ void main()
 	EnWatchdog();
 	
 	//check whether strength exists, if not, use default strength
-	gLedStrength = I2C_read(0x00);
+	gLedStrength = I2C_read(ADDR_STRENGTH_FLAG);
 	if(gLedStrength == 0xAB)  //ok, it's our flag
 	{
 		//delay_ms(5);
-		gLedStrength = I2C_read(0x01);
+		gLedStrength = I2C_read(ADDR_STRENGTH);
 	}
 	else
 	{
-		I2C_write(0x00, 0xAB);  //write our flag
+		I2C_write(ADDR_STRENGTH_FLAG, 0xAB);  //write our flag
 		gLedStrength = 254;  //max level
-		I2C_write(0x01,gLedStrength);
+		I2C_write(ADDR_STRENGTH,gLedStrength);
 	}
 
 	//冗错处理	
@@ -694,12 +714,17 @@ void main()
 		//__Asm CWDT;
 	}	
 */
+	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_ON);
+
 	SlowChangeStrength(POWER_ON);
 
-
+	
 
 	mTemp =0;
 
+
+
+	//main loop
     	while(1)
     	{
 		if(PA3 == 0)   //key press
