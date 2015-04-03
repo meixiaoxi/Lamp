@@ -161,7 +161,7 @@ void LoadCtlDetect()
 		if(T8P1RL <=40)
 		{
 			LoadCtl = 1;
-			delay_ms(300/*250*/);
+			delay_ms(/*250*//*400*/300);
 			LoadCtl = 0;
 		}
           	//CandleShake();
@@ -309,7 +309,7 @@ void LampPowerOFF()
 	gLampMode = ADJUST_MODE;
 	PA0 = 0;
 	gLedStrength = I2C_read(0x01);
-
+	
 	DisWatchdog();
 
     	SlowChangeStrength(POWER_OFF);
@@ -325,15 +325,41 @@ void LampPowerOFF()
 
 	DisWatchdog();
 
-	while(PA3==0){};
+	g3STick =0;
+	//while(PA3==0){};
+	while(PA3 == 0) //wait key release
+	{
+		if(g3STick > 183)    //   3s/16.384ms  factoryReset();
+ 		{
+			I2C_write(0x00, 0x00);   //clear our flag
+			GIE =0;
+	
+			T8P1RL = 150;
+  	 		T8P1E = 1;
+			do{
+				delay_ms(200);
+				pwm_start();
+     				delay_ms(200);
+     			 	pwm_stop();
+			    }while(1);
+		}
+	}
+	
 	
 	EnWatchdog();
 	
 	pwm_start();
 
-    	SlowChangeStrength(POWER_ON);
 	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_ON);
+    	SlowChangeStrength(POWER_ON);
 
+	if(T8P1RL <=40)
+	{
+		LoadCtl = 1;
+		delay_ms(/*250*//*400*/300);
+		LoadCtl = 0;
+	}
+	
 /*
 	while(1)  	//ª∫¬˝¡¡µ∆
 	{
@@ -661,7 +687,7 @@ void main()
 		t8p2_start();
 		while(PA3 == 0) //wait key release
 		{
-			if(g3STick > 250)    //   4s/16.384ms  factoryReset();
+			if(g3STick > 183)    //   3s/16.384ms  factoryReset();
  			{
 				I2C_write(0x00, 0x00);   //clear our flag
 				GIE =0;
@@ -694,7 +720,8 @@ void main()
 	{
 		I2C_write(ADDR_STRENGTH_FLAG, 0xAB);  //write our flag
 		gLedStrength = 254;  //max level
-		I2C_write(ADDR_STRENGTH,gLedStrength);
+		delay_ms(1);
+		I2C_write(ADDR_STRENGTH,254);
 	}
 
 	//»ﬂ¥Ì¥¶¿Ì	
@@ -718,12 +745,15 @@ void main()
 
 	SlowChangeStrength(POWER_ON);
 
-	
+	if(T8P1RL <=40)
+	{
+		LoadCtl = 1;
+		delay_ms(/*250*//*400*/300);
+		LoadCtl = 0;
+	}
 
 	mTemp =0;
-
-
-
+	
 	//main loop
     	while(1)
     	{

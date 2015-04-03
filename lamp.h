@@ -32,7 +32,11 @@
 #define HYPNOSIS_MODE   1 //催眠
 #define BREATHE_MODE 	1 //呼吸
 
-#define LOAD_CTL_TICK	183   //   3000/16.384
+#define LOAD_CTL_TICK		488 // 8000/16.384
+
+							//610  // 10000/16.384  
+							//305		 //  5000/16.384
+							//183   //   3000/16.384
 #define SHORT_PRESS_TICK 	30  // 500/16.384
 
 #define POWEROFF_SHORT_PRESS 	0
@@ -46,7 +50,7 @@
 #define	ADDR_STRENGTH_FLAG	0x00   //led strengtrh 是否有效
 #define ADDR_STRENGTH 0x01		//led 亮度
 
-#define  ADDR_ONOFF_FLAG	0x10
+#define  ADDR_ONOFF_FLAG	0x02
 
 #define LED_PRE_ON	0x33
 #define LED_NOW_ON 0x33
