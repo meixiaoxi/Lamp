@@ -322,7 +322,7 @@ void LampPowerOFF()
 	__Asm IDLE;		
 	
 	key_interrupt_disable();
-
+	gSysReadPA = 0xAB;
 	DisWatchdog();
 
 	g3STick =0;
@@ -823,7 +823,7 @@ void main()
 				gCountCHAR = 0;
 				if(gBreatheWave == BREATHE_UP)
 				{
-					if(gLedStrength > 251)
+					if(gLedStrength > 30)
 						gBreatheWave = BREATHE_DN;
 					else
 					{
