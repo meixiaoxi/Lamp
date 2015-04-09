@@ -34,8 +34,8 @@ unsigned char gCandleShakePos;
 #define EnWatchdog()		RCEN = 1
 #define DisWatchdog()	RCEN = 0
 
-#define key_interrupt_enable()	KIE = 1,KMSK3 = 1
-#define key_interrupt_disable()	KIE = 0,KMSK3 = 0
+#define key_interrupt_enable()	KIE = 1,KMSK1 = 1
+#define key_interrupt_disable()	KIE = 0,KMSK1 = 0
 
 #define pwm_stop()    T8P1M = 0  //关闭PWM
 #define pwm_start()   T8P1M = 1  //启动PWM
@@ -227,7 +227,7 @@ void SlowChangeStrength(unsigned char type)
 					delay_ms(30);
 				*/
 				delay_ms(20);
-				if(PA3 == 0)
+				if(P_KEY == 0)
 				{	
 					count++;
 				}
@@ -315,7 +315,7 @@ void LampPowerOFF()
     	SlowChangeStrength(POWER_OFF);
 
 	pwm_stop();
-	while(PA3==0){};
+	while(P_KEY==0){};
 	delay_ms(5);
 	key_interrupt_enable();
 	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_OFF);
@@ -327,7 +327,7 @@ void LampPowerOFF()
 
 	g3STick =0;
 	//while(PA3==0){};
-	while(PA3 == 0) //wait key release
+	while(P_KEY == 0) //wait key release
 	{
 		if(g3STick > 183)    //   3s/16.384ms  factoryReset();
  		{
@@ -484,12 +484,12 @@ void delay_with_key_detect()
 	
 
 	delay_ms(10);
-	if(PA3 != 0)  //按键防抖
+	if(P_KEY != 0)  //按键防抖
 		return;
 	while(1)
 	{
 		delay_ms(10);
-		if(PA3 == 1)   //key is released
+		if(P_KEY == 1)   //key is released
 			break;
 		mCount++;
 	
@@ -528,7 +528,7 @@ void delay_with_key_detect()
 
 
 	if(isLongPress == 0)   //short press
-	{				
+	{
 		if(gLampMode == ADJUST_MODE)
 		{
 			
@@ -602,14 +602,9 @@ void InitConfig()
 	PAT2 = 0; // 输出
 	PA2 = 0;   //低电平
 
-	//OUT_CTL 脚
-	/*
-	PA1 = 0;
-	PAT1 = 1; //输入
-	*/
-	
-	//key 脚输入
-	PAT3  = 1;
+	//res_ctl 脚
+	PAT3 = 0; //输出
+	PA3 = 0;   //电阻并联
 
 	//i2c的配置
 	PBT = 0x00;
@@ -657,8 +652,6 @@ void InitConfig()
 	GIE = 1;		    //使能全局中断
 }
 
-
-
 void main()
 {
 	unsigned char mDownCount;
@@ -667,6 +660,7 @@ void main()
         
     	while (!SW_HS) __Asm CWDT;    //等待高速时钟切换完成
 
+	
         
    	InitConfig();    //初始化配置
 
@@ -685,7 +679,7 @@ void main()
 
 		DisWatchdog();   //按键中断唤醒之后，系统会默认将RCEN置1
 		t8p2_start();
-		while(PA3 == 0) //wait key release
+		while(P_KEY == 0) //wait key release
 		{
 			if(g3STick > 183)    //   3s/16.384ms  factoryReset();
  			{
@@ -729,7 +723,7 @@ void main()
    {
    	gLedStrength = 254;
    }
-	
+
   	 pwm_start();
    /*
 	while(1)  	
@@ -757,7 +751,7 @@ void main()
 	//main loop
     	while(1)
     	{
-		if(PA3 == 0)   //key press
+		if(P_KEY == 0)   //key press
 		{
 			delay_with_key_detect();
 		}

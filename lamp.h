@@ -12,6 +12,7 @@
 #define BREATHE_DN 1
 
 
+#define P_KEY	PA1
 
 #define FOSC		8
 
