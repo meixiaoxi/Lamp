@@ -18,7 +18,7 @@
 #define swait_uSec(n) Wait_uSec(n)
 
 extern void	Wait_uSec(unsigned int DELAY);
-
+extern void     delay_ms(unsigned int count);
 static void IIC_START()
 {
 	SDA_H();
@@ -162,7 +162,8 @@ void  I2C_write(unsigned char reg, unsigned char val)
 	IIC_SEND_BYTE(val);
 	#endif
 	IIC_STOP();
-	
+	Wait_uSec(2);
+	delay_ms(100);
 	GIE = 1;
 	//return ret;
 }
@@ -194,9 +195,13 @@ short I2C_read(unsigned char reg)
 	IIC_START();	
 	IIC_SEND_BYTE(IIC_ADDR+1);
 	val =IIC_GET_BYTE();
+	IIC_SEND_ACK();
 	IIC_STOP();
 	#endif
+	Wait_uSec(10);
 	GIE = 1;
 
 	return (short)val;
 }
+
+
