@@ -3,7 +3,7 @@
 
 
 
-#define BREATHE_MODE_SUPPORT
+//#define BREATHE_MODE_SUPPORT
 
 //#define HYPNOSIS_MODE_SUPPORT
 //#define CANDLE_SHAKE_DEBUG
@@ -15,6 +15,8 @@
 #define P_KEY	PA1
 
 #define FOSC		8
+
+#define PWM_NUM_START_LOAD		70
 
 #define LED_MIN_LEVEL	7
 #define LED_MAX_LEVEL	254
