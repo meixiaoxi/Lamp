@@ -22,6 +22,9 @@ unsigned char gLampMode;
 
 unsigned char mTemp = 0;
 
+unsigned long gCrcCode;
+unsigned char gLedStatus;
+
 #ifdef HYPNOSIS_MODE_SUPPORT
 unsigned char gHypnosisDownLevel;
 unsigned char gHypnosisDownCount;
@@ -332,7 +335,7 @@ void LampPowerOFF()
 
     	SlowChangeStrength(POWER_OFF);
 
-	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_OFF);
+	gLedStatus = LED_NOW_OFF;
 	
 	pwm_stop();
 	PA3 = 1;
@@ -360,7 +363,7 @@ void LampPowerOFF()
 	
 	pwm_start();
 
-	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_ON);
+	gLedStatus = LED_NOW_ON;
     	SlowChangeStrength(POWER_ON);
 
 	if(T8P1RL != gLedStrength)
@@ -680,13 +683,16 @@ void main()
 
 	DisWatchdog();
 
-	//gLedStrength used as a temp
-	gLedStrength = I2C_read(ADDR_ONOFF_FLAG);
-	
-//	if(PA1 == 0)  //OUT_CTL
-	if(gLedStrength == LED_PRE_ON)
+
+	if(gCrcCode != 0x51AE)
 	{
-		I2C_write(ADDR_ONOFF_FLAG, LED_NOW_OFF);
+		gCrcCode = 0x51AE; 
+		gLedStatus = LED_NOW_ON;
+	}
+	else if(gLedStatus == LED_PRE_ON)
+	{
+		
+		gLedStatus = LED_NOW_OFF;
 		key_interrupt_enable();
 		__Asm IDLE;
 		key_interrupt_disable();
@@ -703,6 +709,7 @@ void main()
 		t8p2_stop();
 	//	g3STick =0;
 	}
+
 
 	EnWatchdog();
 	
@@ -729,8 +736,7 @@ void main()
 
   	 pwm_start();
 
-	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_ON);
-
+	gLedStatus = LED_NOW_ON;
 	SlowChangeStrength(POWER_ON);
 	if(T8P1RL != gLedStrength)
 	{
