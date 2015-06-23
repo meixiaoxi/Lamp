@@ -574,7 +574,7 @@ void delay_with_key_detect()
 		}
 		else
 		{
-			if(gLedStrength >150)
+			if(gLedStrength >50)
 			{
 				if(mCount >= 4)  //10ms
 				{
@@ -584,7 +584,7 @@ void delay_with_key_detect()
 			}
 			else
 			{
-				if(mCount >= 6)  //60ms
+				if(mCount >= 10)  //100ms
 				{
 					mCount = 0;
 					changeLampStrength();
@@ -629,7 +629,7 @@ void InitConfig()
 	gLampMode = ADJUST_MODE;
 	 gCountCHAR =0;
 	 gCountINT= 0;
-	 gLedWave = LED_STRENGTH_UP;
+	 gLedWave = LED_STRENGTH_DN;
 	//KIN mask
 	//initial value, code space
 	/*
@@ -658,7 +658,7 @@ void InitConfig()
 	PA0 = 0;    
 	PAT0 = 0;
 	
-	T8P1P = 249;		//设置PWM周期寄存器初值10KHz
+	T8P1P = 254;		//设置PWM周期寄存器初值10KHz
 	T8P1RL = 0x00;
 	T8P1OC = 0x00; 		//设置PA0输出PWM
 	T8P1C = 0x04;		//设置T8P1预分频1:1，后分频无效，/*并启动T8P1	*/
