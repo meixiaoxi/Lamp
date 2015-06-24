@@ -58,7 +58,7 @@
 #define	ADDR_STRENGTH_FLAG	0x00   //led strengtrh 是否有效
 #define ADDR_STRENGTH 0x09		//led 亮度
 
-#define  ADDR_ONOFF_FLAG	0x12    //亮灭状态
+#define  ADDR_ONOFF_FLAG	0x15    //亮灭状态
 
 #define LED_PRE_ON	0x33
 #define LED_NOW_ON 0x33

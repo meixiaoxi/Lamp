@@ -333,9 +333,8 @@ void LampPowerOFF()
 		gLedStrength = LED_DEFAULT_LEVEL;
 	DisWatchdog();
 
+	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_OFF);
     	SlowChangeStrength(POWER_OFF);
-
-	gLedStatus = LED_NOW_OFF;
 	
 	pwm_stop();
 	PA3 = 1;
@@ -366,7 +365,7 @@ void LampPowerOFF()
 	
 	pwm_start();
 
-	gLedStatus = LED_NOW_ON;
+	I2C_write(ADDR_ONOFF_FLAG, LED_NOW_ON);
     	SlowChangeStrength(POWER_ON);
 
 /*
@@ -729,21 +728,20 @@ void main()
 
 	DisWatchdog();
 
-	t8n_stop();
+	//t8n_stop();
 
-	if(gCrcCode  != 0x51AE)
+        gLedStatus = I2C_read(ADDR_ONOFF_FLAG);
+		
+	
+	if(gLedStatus == LED_PRE_ON)
 	{
-		gCrcCode = 0x51AE; 
-		gLedStatus = LED_NOW_ON;
-	}
-	else if(gLedStatus == LED_PRE_ON)
-	{
-		gLedStatus = LED_NOW_OFF;
+		I2C_write(ADDR_ONOFF_FLAG,LED_NOW_OFF);
 		key_interrupt_enable();
 		__Asm IDLE;
 		key_interrupt_disable();
 
 		DisWatchdog();   //按键中断唤醒之后，系统会默认将RCEN置1
+		g3STick = 0;
 		t8p2_start();
 		while(P_KEY == 0) //wait key release
 		{
@@ -782,9 +780,7 @@ void main()
 
   	 pwm_start();
 
-	gLedStatus = LED_NOW_ON;
-
-
+	I2C_write(ADDR_ONOFF_FLAG,LED_NOW_ON);
 	SlowChangeStrength(POWER_ON);
 
 	while(1)
