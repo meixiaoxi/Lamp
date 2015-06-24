@@ -18,7 +18,7 @@
 
 #define PWM_NUM_START_LOAD		70
 
-#define LED_MIN_LEVEL	1
+#define LED_MIN_LEVEL	7
 #define LED_MAX_LEVEL	254
 #define LED_DEFAULT_LEVEL	200
 
